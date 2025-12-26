@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -139,3 +139,11 @@ class RegisterView(CreateView):
         # Log in the user after registration
         login(self.request, self.object)
         return response
+
+
+def logout_view(request):
+    """
+    Custom logout view to handle GET requests and redirect to login page.
+    """
+    logout(request)
+    return redirect('login')
