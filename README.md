@@ -35,12 +35,11 @@ A complete, feature-rich to-do list web application built with Django 5.x and Bo
 - **Icons**: Bootstrap Icons for better visual communication
 - **Empty States**: Helpful messages when no tasks are found
 
-## Technology Stack
-
 - **Backend**: Django 5.2.9
 - **Frontend**: Bootstrap 5.3.0
 - **Forms**: django-crispy-forms with Bootstrap 5 template pack
-- **Database**: SQLite (default, easily configurable for PostgreSQL/MySQL)
+- **Database**: MySQL (configured via .env)
+- **Environment Management**: python-dotenv
 - **Icons**: Bootstrap Icons
 - **Python**: 3.8+
 
@@ -49,6 +48,7 @@ A complete, feature-rich to-do list web application built with Django 5.x and Bo
 ### Prerequisites
 
 - Python 3.8 or higher
+- MySQL Server installed and running
 - uv (Ultra-fast Python package installer) - [Install uv](https://github.com/astral-sh/uv)
 
 ### Setup Instructions
@@ -88,27 +88,52 @@ A complete, feature-rich to-do list web application built with Django 5.x and Bo
      source .venv/bin/activate
      ```
 
-5. **Run migrations**
+5. **Configure Environment Variables**
+
+   Create a `.env` file in the root directory:
+
+   ```env
+   # MySQL Database Configuration
+   DB_NAME=todo_db
+   DB_USER=root
+   DB_PASSWORD=your_mysql_password
+   DB_HOST=localhost
+   DB_PORT=3306
+
+   # Security
+   SECRET_KEY=your_django_secret_key
+   DEBUG=True
+   ```
+
+6. **Create the MySQL Database**
+
+   Open your MySQL terminal or GUI (like Workbench) and run:
+
+   ```sql
+   CREATE DATABASE todo_db;
+   ```
+
+7. **Run migrations**
 
    ```bash
    python manage.py migrate
    ```
 
-6. **Create a superuser (optional, for admin access)**
+8. **Create a superuser (optional, for admin access)**
 
    ```bash
    python manage.py createsuperuser
    ```
 
-7. **Run the development server**
+9. **Run the development server**
 
    ```bash
    python manage.py runserver
    ```
 
-8. **Access the application**
-   - Open your browser and go to: `http://localhost:8000`
-   - Admin panel: `http://localhost:8000/admin`
+10. **Access the application**
+    - Open your browser and go to: `http://localhost:8000`
+    - Admin panel: `http://localhost:8000/admin`
 
 ## Usage Guide
 
@@ -147,26 +172,19 @@ A complete, feature-rich to-do list web application built with Django 5.x and Bo
 ```
 To-Do List App Using Django/
 ├── todo_project/              # Main project directory
-│   ├── settings.py           # Project settings
+│   ├── settings.py           # Project settings (loads .env)
 │   ├── urls.py               # Root URL configuration
-│   ├── wsgi.py               # WSGI configuration
-│   └── asgi.py               # ASGI configuration
+│   └── ...
 ├── tasks/                     # Main app
-│   ├── migrations/           # Database migrations
-│   ├── templates/            # HTML templates
-│   │   ├── tasks/           # Task-related templates
-│   │   └── registration/    # Auth templates
 │   ├── models.py            # Task model
-│   ├── views.py             # Class-based views
+│   ├── views.py             # Custom logout_view and CRUD views
 │   ├── urls.py              # App URL configuration
-│   ├── forms.py             # Task and user forms
-│   └── admin.py             # Admin configuration
-├── static/                   # Static files
-│   └── css/
-│       └── style.css        # Custom styles
+│   └── ...
+├── static/                   # Static files (CSS/JS)
+├── .env                      # Environment variables (IGNORED BY GIT)
+├── .gitignore                # Git ignore rules
 ├── manage.py                # Django management script
-├── requirements.txt         # Project dependencies
-└── db.sqlite3              # SQLite database (created after migrations)
+└── requirements.txt         # Project dependencies
 ```
 
 ## Models
@@ -203,22 +221,7 @@ All views are class-based for better code organization:
 
 ## Customization
 
-### Changing Database
-
-Edit `todo_project/settings.py` to use PostgreSQL or MySQL:
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'your_db_name',
-        'USER': 'your_db_user',
-        'PASSWORD': 'your_db_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-```
+The project uses MySQL and is configured via the `.env` file. To change settings, simply update the values in your `.env` file. The `settings.py` file uses `python-dotenv` to load these variables.
 
 ### Modifying Styles
 
@@ -292,9 +295,10 @@ python manage.py collectstatic
 
 ### Database Errors
 
-Delete `db.sqlite3` and run migrations again:
+Ensure MySQL service is running and credentials in `.env` are correct. If you change models, run:
 
 ```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
 
